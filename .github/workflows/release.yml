@@ -1,0 +1,43 @@
+name: Create Release
+on:
+  workflow_dispatch: {}
+jobs:
+  test:
+    needs: semantic-release
+    runs-on: ubuntu-latest
+    container:
+      image: flanksource/build-tools:v0.13.6
+    steps:
+      - uses: actions/checkout@v2
+      - run: make build
+
+  binary:
+    needs: semantic-release
+    runs-on: ubuntu-latest
+    env:
+      VERSION: v${{ needs.semantic-release.outputs.release-version }}
+    container:
+      image: flanksource/build-tools:v0.13.6
+    steps:
+      - uses: actions/checkout@v2
+      - run: make release
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./.bin/*
+          tag: v${{ needs.semantic-release.outputs.release-version }}
+          overwrite: true
+          file_glob: true
+
+  semantic-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release-version: ${{ steps.semantic.outputs.release-version }}
+      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: codfish/semantic-release-action@v1
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
