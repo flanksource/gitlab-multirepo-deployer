@@ -5,14 +5,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/xanzy/go-gitlab"
-	"io/ioutil"
 	yaml "gopkg.in/flanksource/yaml.v3"
+	"io/ioutil"
 	"os"
 )
 
-func NewConfig(file string, accessToken string, jobToken string) (Config, error){
+func NewConfig(file string, accessToken string, jobToken string) (Config, error) {
 	cfg := Config{}
-	data, err := ioutil.ReadFile("projects.yaml")
+	data, err := ioutil.ReadFile(file)
 	reader := bytes.NewReader(data)
 	decoder := yaml.NewDecoder(reader)
 	decoder.KnownFields(true)
@@ -41,7 +41,7 @@ func NewConfig(file string, accessToken string, jobToken string) (Config, error)
 }
 
 type Config struct {
-	GroupID int           `yaml:"groupID" json:"groupID"`
-	Projects []GitLabProject `yaml:"projects" json:"projects"`
+	GroupID   int               `yaml:"groupID" json:"groupID"`
+	Projects  []GitLabProject   `yaml:"projects" json:"projects"`
 	Variables map[string]string `yaml:"variables" json:"variables"`
 }
