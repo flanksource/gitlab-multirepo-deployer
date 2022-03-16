@@ -31,9 +31,7 @@ jobs:
           files: >
             ./.bin/gitlab-multirepo-deployer
             ./.bin/gitlab-multirepo-deployer_darwin-amd64
-            ./.bin/gitlab-multirepo-deployer_darwin-arm64
             ./.bin/gitlab-multirepo-deployer_linux-amd64
-            ./.bin/gitlab-multirepo-deployer_linux-arm64
 
   semantic-release:
     runs-on: ubuntu-latest
