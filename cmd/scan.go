@@ -14,9 +14,10 @@ var Scan = &cobra.Command{
 	Short: "Scan all projects for specified branch",
 	Run: func(cmd *cobra.Command, args []string) {
 		branch, _ := cmd.Flags().GetString("branch")
+		configFile, _ := cmd.Flags().GetString("config")
 
 		accessToken, _ := cmd.Flags().GetString("pat")
-		if accessToken == ""{
+		if accessToken == "" {
 			accessToken = os.Getenv("PERSONAL_ACCESS_TOKEN")
 			if accessToken == "" {
 				accessToken, _ = cmd.Flags().GetString("token")
@@ -30,7 +31,7 @@ var Scan = &cobra.Command{
 		}
 		deployToken, _ := cmd.Flags().GetString("token")
 
-		cfg, err := pkg.NewConfig("projects.yaml", accessToken, deployToken)
+		cfg, err := pkg.NewConfig(configFile, accessToken, deployToken)
 		if err != nil {
 			log.Fatalf("Could not create config: %v", err)
 		}

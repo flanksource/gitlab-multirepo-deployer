@@ -15,9 +15,10 @@ var Trigger = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		deployBranch, _ := cmd.Flags().GetString("branch")
 		searchBranches := []string{deployBranch, "main", "master"}
+		configFile, _ := cmd.Flags().GetString("config")
 
 		accessToken, _ := cmd.Flags().GetString("pat")
-		if accessToken == ""{
+		if accessToken == "" {
 			accessToken = os.Getenv("PERSONAL_ACCESS_TOKEN")
 			if accessToken == "" {
 				accessToken, _ = cmd.Flags().GetString("token")
@@ -31,7 +32,7 @@ var Trigger = &cobra.Command{
 		}
 		deployToken, _ := cmd.Flags().GetString("token")
 
-		cfg, err := pkg.NewConfig("projects.yaml", accessToken, deployToken)
+		cfg, err := pkg.NewConfig(configFile, accessToken, deployToken)
 		if err != nil {
 			log.Fatalf("Could not create config: %v", err)
 		}
@@ -81,8 +82,8 @@ var Trigger = &cobra.Command{
 				}
 				status, err := project.GetPipeLineStatus()
 				if err != nil {
-					continue
 					log.Printf("Error retrieving pipeline state: %v", err)
+					continue
 				}
 				count[status]++
 			}
