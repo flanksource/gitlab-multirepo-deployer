@@ -45,6 +45,7 @@ windows:
 .PHONY: compress
 compress:
 	upx -5 ./.bin/*
+	ls -al ./.bin
 
 .PHONY: install
 install:
