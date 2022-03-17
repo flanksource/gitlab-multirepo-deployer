@@ -5,15 +5,16 @@ import (
 	"fmt"
 	"github.com/google/martian/log"
 	"github.com/xanzy/go-gitlab"
+	"strings"
 )
 
 type GitLabProject struct {
-	Name          string `json:"name" yaml:"name"`
-	ID            int `json:"id" yaml:"id"`
-	GroupID 	  int `json:"groupID" yaml:"groupID"`
-	ServiceName   string `json:"serviceName" yaml:"serviceName"`
+	Name          string   `json:"name" yaml:"name"`
+	ID            int      `json:"id" yaml:"id"`
+	GroupID       int      `json:"groupID" yaml:"groupID"`
+	ServiceName   string   `json:"serviceName" yaml:"serviceName"`
 	ExtraServices []string `json:"extraServices" yaml:"extraServices"`
-	Token         string	`json:"token", yaml:"token"`
+	Token         string   `json:"token", yaml:"token"`
 	branch        GitLabBranch
 	pipeline      *gitlab.Pipeline
 	client        *gitlab.Client
@@ -21,7 +22,7 @@ type GitLabProject struct {
 
 type GitLabBranch struct {
 	Name string
-	Ref string
+	Ref  string
 }
 
 func (g *GitLabProject) SetBranch(name string) error {
@@ -44,11 +45,11 @@ func (g *GitLabProject) GetBranch() (string, string) {
 	return g.branch.Name, g.branch.Ref
 }
 
-func (g *GitLabProject) SetPipeline(pipeline *gitlab.Pipeline)  {
+func (g *GitLabProject) SetPipeline(pipeline *gitlab.Pipeline) {
 	g.pipeline = pipeline
 }
 
-func (g *GitLabProject) GetPipeline() (*gitlab.Pipeline) {
+func (g *GitLabProject) GetPipeline() *gitlab.Pipeline {
 	return g.pipeline
 }
 
@@ -76,7 +77,7 @@ func (g *GitLabProject) TriggerPipeline(variables map[string]string) error {
 	if g.branch.Name == "" {
 		return errors.New("no branch selected for pipeline to trigger on")
 	}
-	pipeline, _, err := g.client.PipelineTriggers.RunPipelineTrigger(id,&gitlab.RunPipelineTriggerOptions{
+	pipeline, _, err := g.client.PipelineTriggers.RunPipelineTrigger(id, &gitlab.RunPipelineTriggerOptions{
 		Ref:       gitlab.String(g.branch.Name),
 		Token:     gitlab.String(token),
 		Variables: variables,
@@ -102,7 +103,7 @@ func (g *GitLabProject) GetPipeLineStatus() (string, error) {
 	return status.Status, nil
 }
 
-func (g *GitLabProject) GetID() (int, error){
+func (g *GitLabProject) GetID() (int, error) {
 	if g.ID == 0 {
 		if g.Name == "" {
 			return 0, errors.New("insufficient information for project - name or id must be provided")
@@ -111,8 +112,18 @@ func (g *GitLabProject) GetID() (int, error){
 		if err != nil {
 			return 0, errors.New(fmt.Sprintf("could not determine group ID: %v", err))
 		}
-		if len(projSearch) != 1 {
-			return 0, errors.New("incorrect number of Projects in ID lookup")
+		if len(projSearch) > 1 {
+			var found []string
+			for _, project := range projSearch {
+				found = append(found, project.Name)
+				if strings.Compare(g.Name, project.Name) == 0 {
+					return project.ID, nil
+				}
+			}
+			foundString := strings.Join(found, ", ")
+			return 0, errors.New(fmt.Sprintf("Could not lookup project: %s, found [%s]", g.Name, foundString))
+		} else if len(projSearch) == 0 {
+			return 0, errors.New(fmt.Sprintf("Could not lookup project: %s, found no matches", g.Name))
 		}
 		g.ID = projSearch[0].ID
 	}
