@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/flanksource/gitlab-multirepo-deployer/pkg"
 	"github.com/spf13/cobra"
 	"log"
@@ -16,6 +17,7 @@ var Trigger = &cobra.Command{
 		deployBranch, _ := cmd.Flags().GetString("branch")
 		searchBranches := []string{deployBranch, "main", "master"}
 		configFile, _ := cmd.Flags().GetString("config")
+		timeOut, _ := cmd.Flags().GetInt("timeout")
 
 		accessToken, _ := cmd.Flags().GetString("pat")
 		if accessToken == "" {
@@ -61,6 +63,10 @@ var Trigger = &cobra.Command{
 
 		}
 		startTime := time.Now()
+		parsedTimeout, err := time.ParseDuration(fmt.Sprintf("%sm", timeOut))
+		if err != nil {
+			log.Fatalf("Could not parse timeout duration: %s", err)
+		}
 		for {
 			count := map[string]int{
 				"created":              0,
@@ -90,7 +96,7 @@ var Trigger = &cobra.Command{
 			if count["success"] == len(cfg.Projects) {
 				break
 			}
-			if time.Now().After(startTime.Add(5 * time.Minute)) {
+			if time.Now().After(startTime.Add(parsedTimeout)) {
 				log.Fatalf("Timed out waiting for deployments")
 			}
 			time.Sleep(30 * time.Second)
