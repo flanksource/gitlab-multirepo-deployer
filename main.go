@@ -32,7 +32,7 @@ func main() {
 	root.PersistentFlags().StringP("branch", "b", "main", "branch to trigger against")
 	root.PersistentFlags().StringP("token", "t", "", "ci token")
 	root.PersistentFlags().StringP("pat", "p", "", "personal access token")
-	root.PersistentFlags().IntP("timeout", "to", 5, "timeout")
+	root.PersistentFlags().IntP("timeout", "o", 5, "timeout")
 
 	if err := root.Execute(); err != nil {
 		log.Fatalf("error running application: %s", err)
