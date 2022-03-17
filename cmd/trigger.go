@@ -42,11 +42,15 @@ var Trigger = &cobra.Command{
 		for i := range cfg.Projects {
 			project := &cfg.Projects[i]
 			foundBranch := false
+			errName := project.Name
+			if errName == "" {
+				errName = string(project.ID)
+			}
 			for _, lookup := range searchBranches {
 				err = project.SetBranch(lookup)
 				if err != nil {
 					if !strings.Contains(err.Error(), "{message: 404 Branch Not Found}") {
-						log.Fatalf("unexpected error looking up branch: %s", err.Error())
+						log.Fatalf("unexpected error looking up branch in porject %s: %s", errName, err.Error())
 					}
 				} else {
 					foundBranch = true
@@ -54,11 +58,11 @@ var Trigger = &cobra.Command{
 				}
 			}
 			if !foundBranch {
-				log.Fatalf("Could not find deployable branch")
+				log.Fatalf("Could not find deployable branch in project %s", errName)
 			}
 			err = project.TriggerPipeline(cfg.Variables)
 			if err != nil {
-				log.Fatalf("could not trigger pipeline: %v", err)
+				log.Fatalf("could not trigger pipeline in project %s: %v", errName, err)
 			}
 
 		}
@@ -86,9 +90,13 @@ var Trigger = &cobra.Command{
 				if project == nil {
 					log.Fatalf("HOW??")
 				}
+				errName := project.Name
+				if errName == "" {
+					errName = string(project.ID)
+				}
 				status, err := project.GetPipeLineStatus()
 				if err != nil {
-					log.Printf("Error retrieving pipeline state: %v", err)
+					log.Printf("Error retrieving pipeline state for project %s: %v", errName, err)
 					continue
 				}
 				count[status]++
