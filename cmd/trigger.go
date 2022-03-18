@@ -67,7 +67,7 @@ var Trigger = &cobra.Command{
 
 		}
 		startTime := time.Now()
-		parsedTimeout, err := time.ParseDuration(fmt.Sprintf("%sm", timeOut))
+		parsedTimeout, err := time.ParseDuration(fmt.Sprintf("%dm", timeOut))
 		if err != nil {
 			log.Fatalf("Could not parse timeout duration: %s", err)
 		}
