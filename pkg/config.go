@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/xanzy/go-gitlab"
-	yaml "gopkg.in/flanksource/yaml.v3"
 	"io/ioutil"
 	"os"
+
+	"github.com/xanzy/go-gitlab"
+	yaml "gopkg.in/flanksource/yaml.v3"
 )
 
 func NewConfig(file string, accessToken string, jobToken string) (Config, error) {

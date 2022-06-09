@@ -2,12 +2,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/flanksource/gitlab-multirepo-deployer/pkg"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/flanksource/gitlab-multirepo-deployer/pkg"
+	"github.com/spf13/cobra"
 )
 
 var Trigger = &cobra.Command{
@@ -50,7 +51,7 @@ var Trigger = &cobra.Command{
 				err = project.SetBranch(lookup)
 				if err != nil {
 					if !strings.Contains(err.Error(), "{message: 404 Branch Not Found}") {
-						log.Fatalf("unexpected error looking up branch in porject %s: %s", errName, err.Error())
+						log.Fatalf("unexpected error looking up branch in project %s: %s", errName, err.Error())
 					}
 				} else {
 					foundBranch = true

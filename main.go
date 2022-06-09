@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/flanksource/gitlab-multirepo-deployer/cmd"
 	"github.com/spf13/cobra"
-	"log"
 )
 
 var (

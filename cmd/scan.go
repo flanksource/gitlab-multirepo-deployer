@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/flanksource/gitlab-multirepo-deployer/pkg"
-	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/flanksource/gitlab-multirepo-deployer/pkg"
+	"github.com/spf13/cobra"
 )
 
 var Scan = &cobra.Command{

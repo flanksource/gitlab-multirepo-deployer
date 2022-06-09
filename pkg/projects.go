@@ -3,9 +3,10 @@ package pkg
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/google/martian/log"
 	"github.com/xanzy/go-gitlab"
-	"strings"
 )
 
 type GitLabProject struct {
