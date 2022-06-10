@@ -16,6 +16,7 @@ var Scan = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		branch, _ := cmd.Flags().GetString("branch")
 		configFile, _ := cmd.Flags().GetString("config")
+		tokenFile, _ := cmd.Flags().GetString("token-file")
 
 		accessToken, _ := cmd.Flags().GetString("pat")
 		if accessToken == "" {
@@ -32,7 +33,7 @@ var Scan = &cobra.Command{
 		}
 		deployToken, _ := cmd.Flags().GetString("token")
 
-		cfg, err := pkg.NewConfig(configFile, accessToken, deployToken)
+		cfg, err := pkg.NewConfig(configFile, tokenFile, accessToken, deployToken)
 		if err != nil {
 			log.Fatalf("Could not create config: %v", err)
 		}
