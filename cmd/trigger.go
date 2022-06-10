@@ -36,11 +36,13 @@ var Trigger = &cobra.Command{
 		}
 		deployToken, _ := cmd.Flags().GetString("token")
 
+		log.Println("Processing configuration files")
 		cfg, err := pkg.NewConfig(configFile, tokenFile, accessToken, deployToken)
 		if err != nil {
 			log.Fatalf("Could not create config: %v", err)
 		}
 
+		log.Printf("Scanning projects to identify deployment branches and trigger workflows")
 		for i := range cfg.Projects {
 			project := &cfg.Projects[i]
 			foundBranch := false
@@ -56,6 +58,7 @@ var Trigger = &cobra.Command{
 					}
 				} else {
 					foundBranch = true
+					log.Println(fmt.Sprintf("Triggering branch %-25s in project %s", lookup, errName))
 					break
 				}
 			}
@@ -69,6 +72,7 @@ var Trigger = &cobra.Command{
 
 		}
 		startTime := time.Now()
+		log.Println("Waiting for triggered workflows to complete")
 		parsedTimeout, err := time.ParseDuration(fmt.Sprintf("%dm", timeOut))
 		if err != nil {
 			log.Fatalf("Could not parse timeout duration: %s", err)
@@ -103,7 +107,9 @@ var Trigger = &cobra.Command{
 				}
 				count[status]++
 			}
+			log.Println(fmt.Sprintf("%d/%d workflows complete", count["success"], len(cfg.Projects)))
 			if count["success"] == len(cfg.Projects) {
+				log.Println("All workflows have completed, exiting")
 				break
 			}
 			if time.Now().After(startTime.Add(parsedTimeout)) {
