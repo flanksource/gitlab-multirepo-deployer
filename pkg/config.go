@@ -22,7 +22,7 @@ func NewConfig(file string, tokenFile string, accessToken string, jobToken strin
 		return cfg, errors.New(fmt.Sprintf("Failed to parse project file: %v", err))
 	}
 
-	tokens := map[int]string
+	tokens := map[int]string{}
 	data, err = ioutil.ReadFile(tokenFile)
 	reader = bytes.NewReader(data)
 	decoder = yaml.NewDecoder(reader)
@@ -63,5 +63,3 @@ type Config struct {
 	Projects  []GitLabProject   `yaml:"projects" json:"projects"`
 	Variables map[string]string `yaml:"variables" json:"variables"`
 }
-
-
