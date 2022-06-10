@@ -11,7 +11,7 @@ import (
 	yaml "gopkg.in/flanksource/yaml.v3"
 )
 
-func NewConfig(file string, accessToken string, jobToken string) (Config, error) {
+func NewConfig(file string, tokenFile string, accessToken string, jobToken string) (Config, error) {
 	cfg := Config{}
 	data, err := ioutil.ReadFile(file)
 	reader := bytes.NewReader(data)
@@ -20,6 +20,15 @@ func NewConfig(file string, accessToken string, jobToken string) (Config, error)
 
 	if err := decoder.Decode(&cfg); err != nil {
 		return cfg, errors.New(fmt.Sprintf("Failed to parse project file: %v", err))
+	}
+
+	tokens := map[string]string
+	data, err = ioutil.ReadFile(tokenFile)
+	reader = bytes.NewReader(data)
+	decoder = yaml.NewDecoder(reader)
+
+	if err := decoder.Decode(&tokens); err != nil {
+		return cfg, errors.New(fmt.Sprintf("Failed to parse token file: %v", err))
 	}
 
 	git, err := gitlab.NewClient(accessToken)
@@ -31,7 +40,11 @@ func NewConfig(file string, accessToken string, jobToken string) (Config, error)
 	}
 	for i := range cfg.Projects {
 		cfg.Projects[i].SetClient(git)
-		if err := cfg.Projects[i].SetToken(jobToken); err != nil {
+		projectToken, ok := tokens[cfg.Projects[i].Name]
+		if !ok {
+			projectToken = jobToken
+		}
+		if err := cfg.Projects[i].SetToken(projectToken); err != nil {
 			return cfg, errors.New(fmt.Sprintf("No deployment token for %s: %s", cfg.Projects[i].Name, err))
 		}
 		if cfg.Projects[i].GroupID == 0 {
@@ -46,3 +59,5 @@ type Config struct {
 	Projects  []GitLabProject   `yaml:"projects" json:"projects"`
 	Variables map[string]string `yaml:"variables" json:"variables"`
 }
+
+

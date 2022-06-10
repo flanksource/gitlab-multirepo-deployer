@@ -31,8 +31,9 @@ func main() {
 
 	root.PersistentFlags().StringP("config", "c", "projects.yaml", "Path to config file")
 	root.PersistentFlags().StringP("branch", "b", "main", "branch to trigger against")
-	root.PersistentFlags().StringP("token", "t", "", "ci token")
-	root.PersistentFlags().StringP("pat", "p", "", "personal access token")
+	root.PersistentFlags().StringP("token", "t", "", "ci trigger token")
+	root.PersistentFlags().StringP("pat", "p", "", "personal access token for api calls")
+	root.PersistentFlags().StringP("token-file", "f", "", "file with key-value pairs of project specific tokens")
 	root.PersistentFlags().IntP("timeout", "o", 5, "timeout")
 
 	if err := root.Execute(); err != nil {

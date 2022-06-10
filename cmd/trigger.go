@@ -18,6 +18,7 @@ var Trigger = &cobra.Command{
 		deployBranch, _ := cmd.Flags().GetString("branch")
 		searchBranches := []string{deployBranch, "main", "master"}
 		configFile, _ := cmd.Flags().GetString("config")
+		tokenFile, _ := cmd.Flags().GetString("token-file")
 		timeOut, _ := cmd.Flags().GetInt("timeout")
 
 		accessToken, _ := cmd.Flags().GetString("pat")
@@ -35,7 +36,7 @@ var Trigger = &cobra.Command{
 		}
 		deployToken, _ := cmd.Flags().GetString("token")
 
-		cfg, err := pkg.NewConfig(configFile, accessToken, deployToken)
+		cfg, err := pkg.NewConfig(configFile, tokenFile, accessToken, deployToken)
 		if err != nil {
 			log.Fatalf("Could not create config: %v", err)
 		}
