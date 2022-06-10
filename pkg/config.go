@@ -22,7 +22,7 @@ func NewConfig(file string, tokenFile string, accessToken string, jobToken strin
 		return cfg, errors.New(fmt.Sprintf("Failed to parse project file: %v", err))
 	}
 
-	tokens := map[string]string
+	tokens := map[int]string
 	data, err = ioutil.ReadFile(tokenFile)
 	reader = bytes.NewReader(data)
 	decoder = yaml.NewDecoder(reader)
@@ -40,7 +40,11 @@ func NewConfig(file string, tokenFile string, accessToken string, jobToken strin
 	}
 	for i := range cfg.Projects {
 		cfg.Projects[i].SetClient(git)
-		projectToken, ok := tokens[cfg.Projects[i].Name]
+		id, err := cfg.Projects[i].GetID()
+		if err != nil {
+			return cfg, errors.New(fmt.Sprintf("Failed to lookup project ID: %v", err))
+		}
+		projectToken, ok := tokens[id]
 		if !ok {
 			projectToken = jobToken
 		}
