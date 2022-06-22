@@ -40,6 +40,9 @@ func NewConfig(file string, tokenFile string, accessToken string, jobToken strin
 	}
 	for i := range cfg.Projects {
 		cfg.Projects[i].SetClient(git)
+		if cfg.Projects[i].GroupID == 0 {
+			cfg.Projects[i].GroupID = cfg.GroupID
+		}
 		id, err := cfg.Projects[i].GetID()
 		if err != nil {
 			return cfg, errors.New(fmt.Sprintf("Failed to lookup project ID: %v", err))
@@ -50,9 +53,6 @@ func NewConfig(file string, tokenFile string, accessToken string, jobToken strin
 		}
 		if err := cfg.Projects[i].SetToken(projectToken); err != nil {
 			return cfg, errors.New(fmt.Sprintf("No deployment token for %s: %s", cfg.Projects[i].Name, err))
-		}
-		if cfg.Projects[i].GroupID == 0 {
-			cfg.Projects[i].GroupID = cfg.GroupID
 		}
 	}
 	return cfg, nil
