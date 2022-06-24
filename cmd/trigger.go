@@ -91,6 +91,8 @@ var Trigger = &cobra.Command{
 				"manual":               0,
 				"scheduled":            0,
 			}
+			var failed []string
+			var running []string
 			for i := range cfg.Projects {
 				project := &cfg.Projects[i]
 				if project == nil {
@@ -106,16 +108,27 @@ var Trigger = &cobra.Command{
 					continue
 				}
 				count[status]++
+				if status == "failed" {
+					failed = append(failed, fmt.Sprintf("%s: %s", errName, project.GetPipeline().WebURL))
+				}
+				if status == "running" {
+					running = append(running, errName)
+				}
 			}
 			log.Println(fmt.Sprintf("%d/%d workflows complete", count["success"], len(cfg.Projects)))
+			log.Println(fmt.Sprintf("Running Processes: %s", strings.Join(running, ", ")))
 			if count["success"] == len(cfg.Projects) {
 				log.Println("All workflows have completed, exiting")
 				break
 			}
+			if (count["success"] + count["failed"]) == len(cfg.Projects) {
+				errorString := strings.Join(failed, "\n")
+				log.Fatalf("All worflows complete, failures detected in:\n%s", errorString)
+			}
 			if time.Now().After(startTime.Add(parsedTimeout)) {
 				log.Fatalf("Timed out waiting for deployments")
 			}
-			time.Sleep(30 * time.Second)
+			time.Sleep(60 * time.Second)
 		}
 	},
 }
