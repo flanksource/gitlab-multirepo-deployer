@@ -87,7 +87,7 @@ func (g *GitLabProject) TriggerPipeline(variables map[string]string) error {
 		return err
 	}
 	g.SetPipeline(pipeline)
-	log.Infof("Starting pipeline ID %d in project %s\n", pipeline.ID, g.Name)
+	log.Infof("Starting pipeline ID %d in project %s: %s\n", pipeline.ID, g.Name, pipeline.WebURL)
 
 	return nil
 }
