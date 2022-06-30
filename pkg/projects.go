@@ -3,9 +3,9 @@ package pkg
 import (
 	"errors"
 	"fmt"
+	"log"
 	"strings"
 
-	"github.com/google/martian/log"
 	"github.com/xanzy/go-gitlab"
 )
 
@@ -35,7 +35,6 @@ func (g *GitLabProject) SetBranch(name string) error {
 	if err != nil {
 		return err
 	}
-	log.Infof("Found %s/%s: %s\n", g.Name, branch.Name, branch.Commit.ID)
 
 	g.branch.Name = branch.Name
 	g.branch.Ref = branch.Commit.ID
@@ -87,7 +86,7 @@ func (g *GitLabProject) TriggerPipeline(variables map[string]string) error {
 		return err
 	}
 	g.SetPipeline(pipeline)
-	log.Infof("Starting pipeline ID %d in project %s: %s\n", pipeline.ID, g.Name, pipeline.WebURL)
+	log.Println(fmt.Sprintf("Started pipeline ID %d in project %s: %s\n", pipeline.ID, g.Name, pipeline.WebURL))
 
 	return nil
 }
@@ -100,7 +99,6 @@ func (g *GitLabProject) GetPipeLineStatus() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	log.Infof("Pipeline %s/%d status: %s", g.Name, g.pipeline.ID, status.Status)
 	return status.Status, nil
 }
 
