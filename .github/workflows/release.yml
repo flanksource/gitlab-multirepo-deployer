@@ -1,46 +1,50 @@
 name: Create Release
 on:
-  workflow_dispatch: {}
+  push:
+    branches:
+      - main
 jobs:
-  test:
-    needs: semantic-release
-    runs-on: ubuntu-latest
-    container:
-      image: golang:1.22
-    steps:
-      - uses: actions/checkout@v2
-      - run: make build
-
-  binary:
-    needs: semantic-release
-    runs-on: ubuntu-latest
-    env:
-      VERSION: v${{ needs.semantic-release.outputs.release-version }}
-    container:
-      image: golang:1.22
-    steps:
-      - uses: actions/checkout@v2
-      - run: make release
-      - name: Upload binaries to release
-        uses: meeDamian/github-release@2.0
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ needs.semantic-release.outputs.release-version }}
-          gzip: false
-          allow_override: true
-          files: >
-            ./.bin/gitlab-multirepo-deployer
-            ./.bin/gitlab-multirepo-deployer_darwin-amd64
-            ./.bin/gitlab-multirepo-deployer_linux-amd64
-
   semantic-release:
     runs-on: ubuntu-latest
     outputs:
       release-version: ${{ steps.semantic.outputs.release-version }}
       new-release-published: ${{ steps.semantic.outputs.new-release-published }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: codfish/semantic-release-action@v1
+    steps:  
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - uses: codfish/semantic-release-action@cbd853afe12037afb1306caca9d6b1ab6a58cf2a # v1.10.0
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  binary:
+    runs-on: ubuntu-latest
+    needs: semantic-release
+    steps:
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
+      - uses: actions/setup-node@7c12f8017d5436eb855f1ed4399f037a36fbd9e8 # v2.5.2
+        with:
+          node-version: "16"
+      - name: Install Go
+        uses: actions/setup-go@bfdd3570ce990073878bf10f6b2d79082de49492 # v2.2.0
+        with:
+          go-version: v1.22.x
+      - uses: actions/cache@8492260343ad570701412c2f464a5877dc76bace # v2
+        with:
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            .bin
+          key: cache-${{ hashFiles('**/go.sum') }}-${{ hashFiles('.bin/*') }}
+          restore-keys: |
+            cache-
+
+      - run: make release
+        env:
+          VERSION: v${{ needs.semantic-release.outputs.release-version }}
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@58d525808845e4c8ff229ea1d5d7c496504a79bc # v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./.release/*
+          tag: v${{ needs.semantic-release.outputs.release-version }}
+          overwrite: true
+          file_glob: true
