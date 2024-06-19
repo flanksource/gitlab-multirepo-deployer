@@ -20,7 +20,7 @@ help:
 	@cat docs/developer-guide/make-targets.md
 
 .PHONY: release
-release: linux darwin compress
+release: linux compress
 
 .PHONY: build
 build:
