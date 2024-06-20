@@ -34,9 +34,8 @@ linux:
 	GOOS=linux GOARCH=arm64 go build -ldflags "-X \"main.version=$(VERSION_TAG)\"" -o .bin/$(NAME)_linux-arm64
 
 .PHONY: alpine
-linux:
+alpine:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags "-X \"main.version=$(VERSION_TAG)\"" -o .bin/$(NAME)_alpine-amd64
-	cp .bin/$(NAME)_linux-amd64 .bin/$(NAME)
 	GCGO_ENABLED=0 OOS=linux GOARCH=arm64 go build -ldflags "-X \"main.version=$(VERSION_TAG)\"" -o .bin/$(NAME)_alpine-arm64
 
 .PHONY: darwin
