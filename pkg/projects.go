@@ -107,7 +107,7 @@ func (g *GitLabProject) GetID() (int, error) {
 		if g.Name == "" {
 			return 0, errors.New("insufficient information for project - name or id must be provided")
 		}
-		projSearch, _, err := g.client.Groups.ListGroupProjects(g.GroupID, &gitlab.ListGroupProjectsOptions{Search: gitlab.String(g.Name), IncludeSubGroups: true})
+		projSearch, _, err := g.client.Groups.ListGroupProjects(g.GroupID, &gitlab.ListGroupProjectsOptions{Search: gitlab.String(g.Name), IncludeSubGroups: gitlab.Bool(true)})
 		if err != nil {
 			return 0, errors.New(fmt.Sprintf("could not determine group ID: %v", err))
 		}
