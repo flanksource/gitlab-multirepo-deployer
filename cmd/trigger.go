@@ -48,7 +48,17 @@ var Trigger = &cobra.Command{
 			foundBranch := false
 			errName := project.Name
 			if errName == "" {
-				errName = string(project.ID)
+				var idStr, serviceNameStr string
+			
+				if project.ID != -1 {
+					idStr = fmt.Sprintf("%v", project.ID)
+				}
+			
+				if project.ServiceName != "" {
+					serviceNameStr = project.ServiceName
+				}
+			
+				errName = fmt.Sprintf("Project ID: %s, ServiceName: %s", idStr, serviceNameStr)
 			}
 			for _, lookup := range searchBranches {
 				err = project.SetBranch(lookup)
