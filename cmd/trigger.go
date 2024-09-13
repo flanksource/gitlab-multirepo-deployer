@@ -110,7 +110,7 @@ var Trigger = &cobra.Command{
 				}
 				errName := project.Name
 				if errName == "" {
-					errName = string(project.ID)
+					errName = project.ServiceName
 				}
 				status, err := project.GetPipeLineStatus()
 				if err != nil {
