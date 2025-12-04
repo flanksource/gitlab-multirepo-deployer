@@ -1,6 +1,6 @@
 module github.com/flanksource/gitlab-multirepo-deployer
 
-go 1.22
+go 1.23.0
 
 require (
 	github.com/spf13/cobra v1.8.1
@@ -41,9 +41,9 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/yuin/gopher-lua v1.1.0 // indirect
 	golang.org/x/exp v0.0.0-20220827204233-334a2380cb91 // indirect
-	golang.org/x/net v0.12.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
-	golang.org/x/text v0.11.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20230525234035-dd9d682886f9 // indirect
